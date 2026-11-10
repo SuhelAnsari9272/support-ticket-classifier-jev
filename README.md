@@ -53,3 +53,38 @@ not read this secret. When enabling live CI or deployment, pass it only to the
 specific step or job that needs it using
 `${{ secrets.TYPESAFE_API_KEY }}`. The live test uses the thresholds documented
 in `tests/regression_test.py`.
+
+## Run with Docker Compose
+
+Install Docker Desktop (Windows/macOS) or Docker Engine with the Compose
+plugin (Linux). From the repository root, copy `.env.example` to `.env` and
+put your real provider key in `.env`:
+
+```powershell
+Copy-Item .env.example .env
+# Edit .env and replace the placeholder with your key.
+docker compose up --build -d
+```
+
+The Compose service reads `.env` at container runtime; the key is not written
+into the Dockerfile or Compose file and `.env` is excluded from Git and the
+Docker build context. Never pass the key as a Docker build argument or commit
+the `.env` file.
+
+Check service health and logs:
+
+```powershell
+docker compose ps
+docker compose logs -f classifier
+Invoke-RestMethod http://localhost:8000/health
+```
+
+The API is available at `http://localhost:8000` and its interactive docs are
+at `http://localhost:8000/docs`. To stop it, run `docker compose down`.
+Set `APP_PORT` in `.env` if host port 8000 is already in use, for example
+`APP_PORT=8080`; the container continues to listen on port 8000.
+
+This Compose setup is intended for local/container testing. For production
+deployment, supply `TYPESAFE_API_KEY` through the hosting platform's secret
+manager rather than a checked-in file, and put the API behind HTTPS and an
+appropriate access-control layer.

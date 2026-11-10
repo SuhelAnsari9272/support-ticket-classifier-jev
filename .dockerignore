@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+__pycache__
+*.py[cod]
+*.egg-info
+.env
+.env.*
+!.env.example
+data
+results
+notebooks
+tests
+evaluation
+demo_ui
